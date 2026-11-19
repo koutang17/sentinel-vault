@@ -3,6 +3,7 @@ require("@nomicfoundation/hardhat-chai-matchers");
 require("dotenv").config();
 
 module.exports = {
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
       {

@@ -2,4 +2,5 @@ node_modules/
 artifacts/
 cache/
 .env
+wallet-info.local.txt
 deployments.local.json

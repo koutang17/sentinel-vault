@@ -56,6 +56,13 @@ vault pays callback fees in Base Sepolia ETH (see the docs' Economy section).
 | `SentinelVault` | Base Sepolia | Holds funds, verifies and executes exits |
 | `MockToken` | Base Sepolia | Test asset (6 decimals, USDC-style) |
 
+## Testnet-only, by construction
+
+Every deploy/demo script refuses to run unless the connected chain id is 84532 (Base Sepolia),
+5318007 (Lasna) or 31337 (local hardhat). Mainnet endpoints abort before any transaction.
+The generated wallet lives in `wallet-info.local.txt` and `.env` (both gitignored); the key
+is never printed to the console. Do not import that wallet anywhere except testnet faucets.
+
 ## Prerequisites
 
 - Node 20+, npm

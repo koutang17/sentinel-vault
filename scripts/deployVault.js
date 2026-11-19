@@ -2,11 +2,13 @@
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
 const { load, save } = require("./deployments");
+const guard = require("./guard");
 
 // Base Sepolia callback proxy (dev.reactive.network/origins-and-destinations)
 const CALLBACK_PROXY = "0x476F44b11F5C942c58f4c8E3d0300E5710743585";
 
 async function main() {
+  await guard(hre);
   const [deployer] = await hre.ethers.getSigners();
   const { ORACLE_ADDR, ASSET_ADDR, REACTIVE_ADDR } = load();
   if (!ORACLE_ADDR || !ASSET_ADDR) throw new Error("run deployOracle first");

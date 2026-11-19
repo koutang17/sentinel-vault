@@ -3,11 +3,13 @@
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
 const { load } = require("./deployments");
+const guard = require("./guard");
 
 const U8 = (n) => BigInt(n) * 10n ** 8n;
 const U6 = (n) => BigInt(n) * 10n ** 6n;
 
 async function main() {
+  await guard(hre);
   const [deployer] = await hre.ethers.getSigners();
   const { ORACLE_ADDR, ASSET_ADDR, VAULT_ADDR, REACTIVE_ADDR } = load();
   if (!ORACLE_ADDR || !ASSET_ADDR || !VAULT_ADDR) throw new Error("run deploy scripts first");

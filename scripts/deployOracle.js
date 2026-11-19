@@ -3,6 +3,7 @@ const hre = require("hardhat");
 const { save } = require("./deployments");
 
 async function main() {
+  await guard(hre);
   const [deployer] = await hre.ethers.getSigners();
   console.log("deployer:", deployer.address);
 

@@ -2,6 +2,7 @@
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
 const { load, save } = require("./deployments");
+const guard = require("./guard");
 
 const ORIGIN_CHAIN = 84532n;   // Base Sepolia
 const DEST_CHAIN = 84532n;     // Base Sepolia
@@ -9,6 +10,7 @@ const SL = 95_000_000n;        // 0.95
 const TP = 105_000_000n;       // 1.05
 
 async function main() {
+  await guard(hre);
   const [deployer] = await hre.ethers.getSigners();
   const { ORACLE_ADDR } = load();
   if (!ORACLE_ADDR) throw new Error("run deployOracle first");
