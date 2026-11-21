@@ -1,26 +1,47 @@
-// Funds the Lasna faucet: sends testnet ETH from the test wallet to the faucet
-// contract on Ethereum Sepolia (1 ETH -> 100 lREACT). Testnet only: refuses
-// to run unless chainId == 11155111 (Ethereum Sepolia).
+// Funds the Lasna faucet: sends testnet ETH to the Lasna faucet contract.
+//   npm run faucet                -> via Base Sepolia (recommended)
+//   npm run faucet -- --chain eth -> via Ethereum Sepolia (needs SEPOLIA_RPC in .env)
+// 1 ETH -> 100 lREACT. Cap is 5 ETH per transfer. Testnet only: the chain id
+// of the chosen network is checked before any transaction.
 const { ethers } = require("hardhat");
 require("dotenv").config();
 
-const FAUCET = "0x9b9BB25f1A81078C544C829c5EB7822d747Cf434"; // Lasna faucet, Ethereum Sepolia
-const AMOUNT = ethers.parseEther("0.9"); // cap is 5 ETH; 0.9 -> ~90 lREACT
+const CHAINS = {
+  base: {
+    name: "Base Sepolia",
+    rpc: "https://sepolia.base.org",
+    chainId: 84532n,
+    faucet: "0x2afaFD298b23b62760711756088F75B7409f5967",
+  },
+  eth: {
+    name: "Ethereum Sepolia",
+    rpc: process.env.SEPOLIA_RPC || "",
+    chainId: 11155111n,
+    faucet: "0x9b9BB25f1A81078C544C829c5EB7822d747Cf434",
+  },
+};
+
+const AMOUNT = ethers.parseEther("0.9");
 
 async function main() {
-  if (!process.env.SEPOLIA_RPC) throw new Error("SEPOLIA_RPC missing in .env");
+  const chainArg = process.argv.find((a) => a.startsWith("--chain"));
+  const key = chainArg ? chainArg.split("=")[1] || process.argv[process.argv.indexOf(chainArg) + 1] : "base";
+  const chain = CHAINS[key] || CHAINS.base;
+  if (!chain.rpc) throw new Error("chain " + key + " has no RPC configured (SEPOLIA_RPC missing?)");
   if (!process.env.DEST_PK) throw new Error("DEST_PK missing in .env");
-  const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC);
+
+  const provider = new ethers.JsonRpcProvider(chain.rpc);
   const { chainId } = await provider.getNetwork();
-  if (chainId !== 11155111n) {
-    throw new Error("refusing: expected Ethereum Sepolia (11155111), got " + chainId);
+  if (chainId !== chain.chainId) {
+    throw new Error("refusing: expected " + chain.name + " (" + chain.chainId + "), got " + chainId);
   }
   const wallet = new ethers.Wallet(process.env.DEST_PK, provider);
   const bal = await provider.getBalance(wallet.address);
-  console.log("wallet:", wallet.address);
-  console.log("balance:", ethers.formatEther(bal), "ETH");
-  if (bal < AMOUNT + 100000000000000n) throw new Error("not enough Sepolia ETH - claim from the faucet first");
-  const tx = await wallet.sendTransaction({ to: FAUCET, value: AMOUNT });
+  console.log("chain   :", chain.name);
+  console.log("wallet  :", wallet.address);
+  console.log("balance :", ethers.formatEther(bal), "ETH");
+  if (bal < AMOUNT + 100000000000000n) throw new Error("not enough " + chain.name + " ETH - claim from the faucet first");
+  const tx = await wallet.sendTransaction({ to: chain.faucet, value: AMOUNT });
   console.log("faucet tx:", tx.hash);
   await tx.wait();
   console.log("sent", ethers.formatEther(AMOUNT), "ETH -> expect ~90 lREACT on the same address (Lasna)");

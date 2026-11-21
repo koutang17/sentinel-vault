@@ -9,7 +9,8 @@
     "deploy:oracle": "hardhat run scripts/deployOracle.js --network base-sepolia",
     "deploy:reactive": "hardhat run scripts/deployReactive.js --network lasna",
     "deploy:vault": "hardhat run scripts/deployVault.js --network base-sepolia",
-    "demo": "hardhat run scripts/demo.js --network base-sepolia"
+    "demo": "hardhat run scripts/demo.js --network base-sepolia",
+    "faucet": "hardhat run scripts/lasnaFaucet.js"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",
