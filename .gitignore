@@ -3,4 +3,5 @@ artifacts/
 cache/
 .env
 wallet-info.local.txt
+private_key.txt
 deployments.local.json

@@ -21,7 +21,7 @@ const CHAINS = {
   },
 };
 
-const AMOUNT = ethers.parseEther("0.9");
+const AMOUNT = ethers.parseEther("0.02"); // 0.02 ETH -> ~2 lREACT (enough for deploy + calls)
 
 async function main() {
   const chainArg = process.argv.find((a) => a.startsWith("--chain"));
@@ -44,7 +44,7 @@ async function main() {
   const tx = await wallet.sendTransaction({ to: chain.faucet, value: AMOUNT });
   console.log("faucet tx:", tx.hash);
   await tx.wait();
-  console.log("sent", ethers.formatEther(AMOUNT), "ETH -> expect ~90 lREACT on the same address (Lasna)");
+  console.log("sent", ethers.formatEther(AMOUNT), "ETH -> expect ~2 lREACT on the same address (Lasna)");
 }
 
 main().catch((e) => { console.error(e); process.exitCode = 1; });
