@@ -47,6 +47,18 @@ Base Sepolia                                   Reactive Lasna (5318007)
 Both contracts must stay funded: the reactive contract pays its own gas in lREACT, and the
 vault pays callback fees in Base Sepolia ETH (see the docs' Economy section).
 
+## Deployments (live, Ethereum Sepolia + Lasna)
+
+| Contract | Chain | Address |
+|---|---|---|
+| MockOracle | Ethereum Sepolia | `0x5042cB9256E8F722263A29Ea2334C2eBD7B85979` |
+| MockToken (sUSD) | Ethereum Sepolia | `0x2959Dd4D518a5D534abf2097C408e0BA6FD701dB` |
+| SentinelVault | Ethereum Sepolia | `0x3a5820b60499dD05548055eeA21B786EA31F3826` |
+| SentinelReactive | Reactive Lasna | `0x31297a441F9EC94B34236344ea5F1cE6EC001614` |
+
+Verified end-to-end: oracle price event -> Lasna `react()` -> callback -> vault released 500 sUSD back to the owner
+(`VaultClosed.exitPrice = 0.94`, reason `STOP`). Full tx hashes in [docs/submission.md](docs/submission.md).
+
 ## Contracts
 
 | Contract | Chain | Role |

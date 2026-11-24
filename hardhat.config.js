@@ -16,6 +16,11 @@ module.exports = {
     ],
   },
   networks: {
+    "eth-sepolia": {
+      url: process.env.SEPOLIA_RPC || "",
+      chainId: 11155111,
+      accounts: process.env.DEST_PK ? [process.env.DEST_PK] : [],
+    },
     "base-sepolia": {
       url: process.env.DEST_RPC || "",
       chainId: 84532,

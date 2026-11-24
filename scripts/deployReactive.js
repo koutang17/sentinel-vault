@@ -4,8 +4,9 @@ const { ethers } = require("hardhat");
 const { load, save } = require("./deployments");
 const guard = require("./guard");
 
-const ORIGIN_CHAIN = 84532n;   // Base Sepolia
-const DEST_CHAIN = 84532n;     // Base Sepolia
+// origin = destination = Ethereum Sepolia (11155111) by default; override with env
+const ORIGIN_CHAIN = BigInt(process.env.ORIGIN_CHAIN || 11155111);
+const DEST_CHAIN = BigInt(process.env.DEST_CHAIN || 11155111);
 const SL = 95_000_000n;        // 0.95
 const TP = 105_000_000n;       // 1.05
 
@@ -23,7 +24,10 @@ async function main() {
   await reactive.waitForDeployment();
   console.log("reactive:", await reactive.getAddress());
 
-  save({ REACTIVE_ADDR: await reactive.getAddress() });
+  save({
+    REACTIVE_ADDR: await reactive.getAddress(),
+    REACTIVE_DEPLOY_TX: reactive.deploymentTransaction()?.hash || "",
+  });
   console.log("next: deployVault, then bind");
 }
 

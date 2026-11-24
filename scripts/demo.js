@@ -5,7 +5,7 @@ const { ethers } = require("hardhat");
 const { load } = require("./deployments");
 const guard = require("./guard");
 
-const U8 = (n) => BigInt(n) * 10n ** 8n;
+const U8 = (n) => BigInt(Math.round(n * 1e8)); // 8-decimal USD price
 const U6 = (n) => BigInt(n) * 10n ** 6n;
 
 async function main() {
@@ -31,12 +31,12 @@ async function main() {
   console.log("deposited 500 sUSD, tx:", tx.hash);
 
   console.log("== 2. arm ==");
-  tx = await vault.arm(U8(95), U8(105));
+  tx = await vault.arm(U8(0.95), U8(1.05));
   await tx.wait();
   console.log("armed SL=0.95 TP=1.05, tx:", tx.hash);
 
   console.log("== 3. poke price to 0.94 ==");
-  tx = await oracle.setPrice(U8(94));
+  tx = await oracle.setPrice(U8(0.94));
   await tx.wait();
   console.log("price poke tx:", tx.hash);
 
@@ -51,7 +51,8 @@ async function main() {
     console.log("TIMEOUT: vault not closed. Check lREACT balance of the reactive contract and its funding.");
     return;
   }
-  const evs = await vault.queryFilter("VaultClosed");
+  const latest = await ethers.provider.getBlockNumber();
+  const evs = await vault.queryFilter("VaultClosed", Math.max(0, latest - 9), latest);
   const ev = evs[evs.length - 1];
   console.log("== 5. result ==");
   console.log(JSON.stringify({
@@ -62,9 +63,9 @@ async function main() {
     vaultClosedTx: ev.transactionHash,
   }, null, 2));
   console.log("== submission evidence ==");
-  console.log("origin event chain: Base Sepolia");
-  console.log("reactive contract :", REACTIVE_ADDR, "(Lasna)");
-  console.log("vault contract    :", VAULT_ADDR, "(Base Sepolia)");
+  console.log("origin event chain:", (await ethers.provider.getNetwork()).chainId.toString());
+  console.log("reactive contract :", REACTIVE_ADDR, "(Lasna 5318007)");
+  console.log("vault contract    :", VAULT_ADDR, "(destination chain)");
   console.log("oracle price poke :", tx.hash);
   console.log("callback delivery :", ev.transactionHash);
 }

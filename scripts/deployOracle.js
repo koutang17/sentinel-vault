@@ -1,6 +1,7 @@
 // Deploys the mock oracle and the test asset on the destination chain (Base Sepolia).
 const hre = require("hardhat");
 const { save } = require("./deployments");
+const guard = require("./guard");
 
 async function main() {
   await guard(hre);
@@ -8,7 +9,8 @@ async function main() {
   console.log("deployer:", deployer.address);
 
   const Oracle = await hre.ethers.getContractFactory("MockOracle");
-  const oracle = await Oracle.deploy(100_000_000n); // $1.00, 8 decimals
+  const oracleTx = await Oracle.getDeployTransaction(100_000_000n); // $1.00, 8 decimals
+  const oracle = await Oracle.deploy(100_000_000n);
   await oracle.waitForDeployment();
   console.log("oracle:", await oracle.getAddress());
 
@@ -17,7 +19,12 @@ async function main() {
   await token.waitForDeployment();
   console.log("asset:", await token.getAddress());
 
-  save({ ORACLE_ADDR: await oracle.getAddress(), ASSET_ADDR: await token.getAddress() });
+  save({
+    ORACLE_ADDR: await oracle.getAddress(),
+    ASSET_ADDR: await token.getAddress(),
+    ORACLE_DEPLOY_TX: oracle.deploymentTransaction()?.hash || "",
+    ASSET_DEPLOY_TX: token.deploymentTransaction()?.hash || "",
+  });
   console.log("saved to deployments.local.json");
 }
 
