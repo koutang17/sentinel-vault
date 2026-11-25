@@ -14,7 +14,12 @@
     "verify": "hardhat run scripts/verify.js --network eth-sepolia",
     "evidence": "hardhat run scripts/collectEvidence.js --network eth-sepolia",
     "public:evidence": "node scripts/publicEvidence.js",
-    "faucet": "node scripts/lasnaFaucet.js --chain eth"
+    "faucet": "node scripts/lasnaFaucet.js --chain eth",
+    "demo:token": "hardhat run scripts/deployMonitorToken.js --network eth-sepolia",
+    "demo:xfers:deploy": "hardhat run scripts/deployXfers.js --network lasna",
+    "demo:xfers:run": "hardhat run scripts/triggerXfers.js --network eth-sepolia",
+    "demo:dynsub:deploy": "hardhat run scripts/deployDynamicSub.js --network lasna",
+    "demo:dynsub:run": "hardhat run scripts/runDynamicSub.js --network eth-sepolia"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",

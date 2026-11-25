@@ -87,6 +87,44 @@ The deploy scripts save new addresses in the gitignored `deployments.local.json`
 
 `demo.js` checks the Lasna contract before sending any Sepolia transaction. It stops if the reactive contract has already fired or is bound to a different vault. To run a second cycle on the same deployment, the owner must first call `updateThresholds` on Lasna with the intended thresholds; the vault is then armed by `demo.js`. Keep thresholds on both chains consistent.
 
+## 共学营小实验：Xfers 监控与动态订阅
+
+两个独立的 Reactive 小实验，均部署在 Lasna，源码、脚本与 npm 命令可一键复现。环境变量与上一节相同（`SEPOLIA_RPC`、`REACTIVE_PK`、`DEST_PK`）。
+
+| 实验 | 合约 | 行为 |
+|---|---|---|
+| Xfers | `contracts/Xfers.sol` | Lasna 上订阅 Sepolia 全部 ERC-20 `Transfer`（`contract=0x0`、topic1-3 用 `REACTIVE_IGNORE`），累计满 5 笔后自动退订 |
+| DynamicSub | `contracts/DynamicSub.sol` | 运行时 `start()` 增加订阅、达到 `maxTriggers` 自动取消、owner 也可 `stop()` 手动取消 |
+| MonitorToken | `contracts/MonitorToken.sol` | Sepolia 上的测试代币，仅 DynamicSub 监控（避免全链流量噪声） |
+
+```bash
+npm run compile
+
+# 1) Xfers（D3 场景 1：第一个监控合约）
+npm run demo:token          # Sepolia: 部署 MonitorToken
+npm run demo:xfers:deploy   # Lasna: 部署 Xfers(limit=5)，部署时充值 0.2 lREACT
+npm run demo:xfers:run      # Sepolia 发一笔转账，轮询 Lasna 抓 react() 交易
+
+# 2) 动态订阅（D5 场景 5）
+npm run demo:dynsub:deploy  # Lasna: 部署 DynamicSub(maxTriggers=3)，充值 0.3 lREACT
+npm run demo:dynsub:run     # Lasna start() → Sepolia 3 笔转账 → 抓 3 次 react() 并验证自动退订
+```
+
+已发布的证据（Lasna）：
+
+- Xfers `0x98af77c1132f26c9BB1046446D7E9e528E0bFa82`：[contract](https://lasna.reactscan.net/address/0x98af77c1132f26c9BB1046446D7E9e528E0bFa82) · [react() tx](https://lasna.reactscan.net/tx/0x15fb1316b77ea7363550df33a4478665e5f1a86f975ba8b2b0ec49eab38e0a9b)（共 5 笔，`limit` 5→0 自动退订）
+- DynamicSub `0x6D38Ec4aF68b8ea069a6C21970f76426FbAb2b65`：[contract](https://lasna.reactscan.net/address/0x6D38Ec4aF68b8ea069a6C21970f76426FbAb2b65) · [react#1](https://lasna.reactscan.net/tx/0x72b48f5d636ba08ba69cf1fde5f20435b8f3cf7567aa3d37f4cdea559dc1b5fc) · [react#2](https://lasna.reactscan.net/tx/0x465b305f177b5e9ea0a68028d098e0d027ccc17826df81a5b930f9ad056801d2) · [react#3](https://lasna.reactscan.net/tx/0x5cf7ce29d174d7bacdaec8ab4bb42d7d777629cba8381e8d2defa01313242349)
+
+`Triggered(n, sourceTx)` 事件携带触发它的 Sepolia 源交易哈希，可与源链记录一一对应；第 3 次 react 的同一笔交易里还会发出 `Unsubscribed("limit")`。
+
+无需私钥即可复核当前状态：
+
+```bash
+cast call 0x98af77c1132f26c9BB1046446D7E9e528E0bFa82 "limit()(uint256)" --rpc-url https://lasna-rpc.rnk.dev/
+cast call 0x6D38Ec4aF68b8ea069a6C21970f76426FbAb2b65 "count()(uint256)" --rpc-url https://lasna-rpc.rnk.dev/
+cast call 0x6D38Ec4aF68b8ea069a6C21970f76426FbAb2b65 "active()(bool)" --rpc-url https://lasna-rpc.rnk.dev/
+```
+
 ## Scope and limits
 
 - The oracle is manually controlled. A real feed needs an adapter, deployment, and new end-to-end validation.
