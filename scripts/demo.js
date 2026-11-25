@@ -1,4 +1,4 @@
-// End-to-end demo on Base Sepolia: fund -> arm -> poke price -> watch the cross-chain
+// End-to-end demo on Ethereum Sepolia: fund -> arm -> poke price -> watch the cross-chain
 // callback close the vault. Prints an evidence block for the buildathon submission.
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
@@ -12,7 +12,24 @@ async function main() {
   await guard(hre);
   const [deployer] = await hre.ethers.getSigners();
   const { ORACLE_ADDR, ASSET_ADDR, VAULT_ADDR, REACTIVE_ADDR } = load();
-  if (!ORACLE_ADDR || !ASSET_ADDR || !VAULT_ADDR) throw new Error("run deploy scripts first");
+  if (!ORACLE_ADDR || !ASSET_ADDR || !VAULT_ADDR || !REACTIVE_ADDR) throw new Error("run deploy scripts first");
+
+  // A deployed reactive contract fires once. Check Lasna before sending any
+  // Sepolia transactions so a repeat demo does not leave funds in an armed vault.
+  const reactiveProvider = new ethers.JsonRpcProvider(process.env.REACTIVE_RPC || "https://lasna-rpc.rnk.dev/");
+  const reactiveChain = await reactiveProvider.getNetwork();
+  if (reactiveChain.chainId !== 5318007n) throw new Error("REACTIVE_RPC must point to Lasna (5318007)");
+  const reactive = new ethers.Contract(
+    REACTIVE_ADDR,
+    ["function triggered() view returns (bool)", "function vault() view returns (address)"],
+    reactiveProvider
+  );
+  if ((await reactive.vault()).toLowerCase() !== VAULT_ADDR.toLowerCase()) {
+    throw new Error("reactive contract is not bound to this vault");
+  }
+  if (await reactive.triggered()) {
+    throw new Error("reactive contract already fired; reset its thresholds on Lasna before rerunning the demo");
+  }
 
   const Oracle = await hre.ethers.getContractFactory("MockOracle");
   const oracle = Oracle.attach(ORACLE_ADDR);

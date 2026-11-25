@@ -1,9 +1,9 @@
 // Funds the Lasna faucet: sends testnet ETH to the Lasna faucet contract.
-//   npm run faucet                -> via Base Sepolia (recommended)
-//   npm run faucet -- --chain eth -> via Ethereum Sepolia (needs SEPOLIA_RPC in .env)
+//   npm run faucet                -> via Ethereum Sepolia (needs SEPOLIA_RPC in .env)
+//   node scripts/lasnaFaucet.js --chain base -> via Base Sepolia
 // 1 ETH -> 100 lREACT. Cap is 5 ETH per transfer. Testnet only: the chain id
 // of the chosen network is checked before any transaction.
-const { ethers } = require("hardhat");
+const ethers = require("ethers");
 require("dotenv").config();
 
 const CHAINS = {
@@ -26,7 +26,8 @@ const AMOUNT = ethers.parseEther("0.02"); // 0.02 ETH -> ~2 lREACT (enough for d
 async function main() {
   const chainArg = process.argv.find((a) => a.startsWith("--chain"));
   const key = chainArg ? chainArg.split("=")[1] || process.argv[process.argv.indexOf(chainArg) + 1] : "base";
-  const chain = CHAINS[key] || CHAINS.base;
+  const chain = CHAINS[key];
+  if (!chain) throw new Error("unsupported faucet chain: " + key + " (use eth or base)");
   if (!chain.rpc) throw new Error("chain " + key + " has no RPC configured (SEPOLIA_RPC missing?)");
   if (!process.env.DEST_PK) throw new Error("DEST_PK missing in .env");
 

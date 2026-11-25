@@ -27,7 +27,7 @@ module.exports = {
       accounts: process.env.DEST_PK ? [process.env.DEST_PK] : [],
     },
     lasna: {
-      url: "https://lasna-rpc.rnk.dev/",
+      url: process.env.REACTIVE_RPC || "https://lasna-rpc.rnk.dev/",
       chainId: 5318007,
       accounts: process.env.REACTIVE_PK ? [process.env.REACTIVE_PK] : [],
     },

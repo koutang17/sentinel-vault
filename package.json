@@ -1,16 +1,19 @@
 {
   "name": "sentinel-vault",
   "version": "0.1.0",
-  "description": "Sentinel Vault - on-chain stop-loss / take-profit exit orders for Reactive Omni Buildathon (track: Set It and Forget It)",
+  "description": "Sentinel Vault - price-triggered ERC-20 vault release on Reactive Network (Set It and Forget It)",
   "license": "MIT",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy:oracle": "hardhat run scripts/deployOracle.js --network base-sepolia",
+    "deploy:oracle": "hardhat run scripts/deployOracle.js --network eth-sepolia",
     "deploy:reactive": "hardhat run scripts/deployReactive.js --network lasna",
-    "deploy:vault": "hardhat run scripts/deployVault.js --network base-sepolia",
-    "demo": "hardhat run scripts/demo.js --network base-sepolia",
-    "faucet": "hardhat run scripts/lasnaFaucet.js"
+    "deploy:vault": "hardhat run scripts/deployVault.js --network eth-sepolia",
+    "bind": "hardhat run scripts/bind.js --network lasna",
+    "demo": "hardhat run scripts/demo.js --network eth-sepolia",
+    "verify": "hardhat run scripts/verify.js --network eth-sepolia",
+    "evidence": "hardhat run scripts/collectEvidence.js --network eth-sepolia",
+    "faucet": "node scripts/lasnaFaucet.js --chain eth"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.1.2",
