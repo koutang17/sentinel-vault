@@ -1,6 +1,6 @@
 # Reactive Omni Buildathon 提交材料 — 赛道 2：Set It and Forget It
 
-截至 2026-11-25：用户已确认报名赛道 2。公开仓库、链上证据及 2:28 演示视频文件已具备；视频公开链接与 DoraHacks 项目提交仍待完成。主办方公布的截止日期为 **2026-12-05**，具体时刻和时区未核实。[官方说明](https://blog.reactive.network/reactive-omni-buildathon-thirty-days-to-find-out-what-one-second-buys/)
+截至 2026-11-25：用户已确认报名赛道 2。公开仓库、链上证据及 2:28 演示视频文件已具备；视频公开链接与 DoraHacks 项目提交仍待完成。[DoraHacks 活动页](https://dorahacks.io/hackathon/reactive-omni-buildathon/detail)标明的截止时间为 **2026-12-06 04:00（UTC+8）**，对应活动介绍中的 12 月 5 日（UTC）。
 
 ## 可直接填写的项目文字
 
@@ -44,6 +44,8 @@
 | 5. callback 执行，发出 `VaultClosed` | Ethereum Sepolia | [`0x441b18f6…0676`](https://sepolia.etherscan.io/tx/0x441b18f6417a5302aa54360a78f3e256426e6e1fbffd6cb8fd1dde3188da0676) |
 
 2026-11-25 经公开 RPC 只读核对：上述第 3–5 步交易状态均为成功；三个事件的价格均为 `94000000`，原因均指向 `STOP`。当前 `vault.closed() = true`、`vault.armed() = false`、`reactive.triggered() = true`；Vault 的 sUSD 余额为 0，owner 的 sUSD 余额为 `500000000`（6 位小数，即 500 sUSD）。
+
+[Reactscan 的 Reactive 交易页](https://lasna.reactscan.net/tx/0x4c91ad1c838ab9dcceea0e4d3a9bd091442777e2df8868a5e8e234e4034757ae)还直接列出了源交易、已确认的 callback 及目标链交易链接，可在一个页面核对完整因果链。
 
 ## 提交检查
 
