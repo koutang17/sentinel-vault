@@ -1,6 +1,6 @@
 # Reactive Omni Buildathon 提交材料 — 赛道 2：Set It and Forget It
 
-截至 2026-11-25：用户已确认报名赛道 2。公开仓库、链上证据及 2:28 演示视频文件已具备；视频公开链接与 DoraHacks 项目提交仍待完成。[DoraHacks 活动页](https://dorahacks.io/hackathon/reactive-omni-buildathon/detail)标明的截止时间为 **2026-12-06 04:00（UTC+8）**，对应活动介绍中的 12 月 5 日（UTC）。
+截至 2026-11-25：用户已确认报名赛道 2。公开仓库和链上证据已具备；正式演示视频、公开链接与 DoraHacks 项目提交仍待完成。[DoraHacks 活动页](https://dorahacks.io/hackathon/reactive-omni-buildathon/detail)标明的截止时间为 **2026-12-06 04:00（UTC+8）**，对应活动介绍中的 12 月 5 日（UTC）。
 
 ## 可直接填写的项目文字
 
@@ -47,6 +47,8 @@
 
 [Reactscan 的 Reactive 交易页](https://lasna.reactscan.net/tx/0x4c91ad1c838ab9dcceea0e4d3a9bd091442777e2df8868a5e8e234e4034757ae)还直接列出了源交易、已确认的 callback 及目标链交易链接，可在一个页面核对完整因果链。
 
+无需私钥的公开复核命令：`npm ci && npm run public:evidence`。该命令只读取公开 RPC 的交易收据、事件和合约状态，不发送交易。
+
 ## 提交检查
 
 | 要求 | 当前状态 |
@@ -57,15 +59,15 @@
 | 已部署合约地址 | ✅ 见上表 |
 | 源事件 → Reactive → callback 交易 | ✅ 见上表 |
 | README 复现说明 | ✅ 指向 Ethereum Sepolia 与 Lasna |
-| 少于 3 分钟的公开视频 | ⬜ 2:28 视频已制作，待上传公开链接 |
+| 少于 3 分钟的公开视频 | ⬜ 待录制真实命令与链上证据演示并上传 |
 | DoraHacks 项目正式提交 | ⬜ 待提交；账号内状态未核验 |
 
-## 演示视频分镜（目标 2:40–2:50）
+## 演示视频分镜（目标少于 3 分钟）
 
-1. **0:00–0:25 — 场景与范围。** 展示标题和问题：价格条件触发的个人自动化。说明 v1 是“退回同一代币”，不是卖出止损。
-2. **0:25–1:00 — 架构。** 展示 Ethereum Sepolia `MockOracle` → Lasna `SentinelReactive` → Ethereum Sepolia `SentinelVault`。强调链上监听、callback 双层认证、金库再次读取价格。
-3. **1:00–2:15 — 链上证据。** 依次展示源事件 `PriceUpdated(0.94)`、Lasna `Triggered(0.94, STOP)`、Sepolia `VaultClosed(0.94, STOP)`；显示 500 sUSD 从金库退回 owner。画面中让浏览器交易页和哈希可见。
-4. **2:15–2:45 — 结尾。** 说明演示局限：手动 MockOracle、只触发一次、未兑换资产；下一步是接真实价格源并实现真实换仓。
+1. **0:00–0:15 — 场景与范围。** 简述价格事件触发个人金库资产退回；说明当前版本未卖出代币。
+2. **0:15–0:40 — 实际命令。** 在仓库终端执行 `npm run public:evidence`，说明无需私钥、只读核验已发生的测试网运行。
+3. **0:40–1:55 — 链上证据。** 依次展示命令输出及浏览器交易页：源事件 `PriceUpdated(0.94)`、Lasna `Triggered(0.94, STOP)`、已确认 callback 和 Sepolia `VaultClosed(0.94, STOP)`。让交易哈希可见。
+4. **1:55–2:35 — 结果与局限。** 展示金库余额 0、owner 余额 500 sUSD；说明 MockOracle 手动推价、一次触发、同币退回不消除价格敞口。
 
 已部署实例目前 `triggered=true`。录屏优先展示以上已完成交易。若必须现场重跑，先由 owner 在 Lasna 调用 `updateThresholds` 重置 Reactive；`demo.js` 的预检会阻止未经重置的重复演示。
 
@@ -78,7 +80,7 @@
 
 ## 剩余动作
 
-- [x] 制作少于 3 分钟的演示视频（2:28，英文旁白及字幕）
+- [ ] 录制少于 3 分钟的真实命令与链上证据演示
 - [ ] 上传为无需登录即可观看的公开链接
 - [ ] 将公开视频链接填入本文件及 DoraHacks 表单
 - [ ] 在 DoraHacks 完成项目提交，并核对赛道、链接和提交成功状态

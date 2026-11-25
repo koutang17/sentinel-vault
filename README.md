@@ -43,6 +43,15 @@ The reactive contract needs lREACT for execution. Destination callback fees can 
 
 The [source event](https://sepolia.etherscan.io/tx/0x5b954e5f4fe9e13bb999eb2a1ec7a8d0994c5b19b1daef1d408b8712853bc4ee), [Lasna reaction](https://lasna.reactscan.net/tx/0x4c91ad1c838ab9dcceea0e4d3a9bd091442777e2df8868a5e8e234e4034757ae), and [destination callback](https://sepolia.etherscan.io/tx/0x441b18f6417a5302aa54360a78f3e256426e6e1fbffd6cb8fd1dde3188da0676) all succeeded. The callback emitted `VaultClosed` with price `0.94` and reason `STOP`; 500 sUSD was returned to the owner. Addresses, deployment transactions, and the full evidence trail are in [docs/submission.md](docs/submission.md).
 
+Anyone can recheck this published run without a wallet or private key:
+
+```bash
+npm ci
+npm run public:evidence
+```
+
+The command reads the three public transaction receipts, checks their events and the 500 sUSD transfer, and prints the current state on both chains.
+
 This published instance has already fired: `SentinelReactive.triggered() = true` and `SentinelVault.closed() = true`. Use the recorded transactions to review the completed run. A repeat live demonstration requires resetting the reactive thresholds on Lasna before running `demo.js` again.
 
 ## Contracts

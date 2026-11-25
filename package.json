@@ -13,6 +13,7 @@
     "demo": "hardhat run scripts/demo.js --network eth-sepolia",
     "verify": "hardhat run scripts/verify.js --network eth-sepolia",
     "evidence": "hardhat run scripts/collectEvidence.js --network eth-sepolia",
+    "public:evidence": "node scripts/publicEvidence.js",
     "faucet": "node scripts/lasnaFaucet.js --chain eth"
   },
   "dependencies": {
