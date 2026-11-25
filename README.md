@@ -96,6 +96,13 @@ The deploy scripts save new addresses in the gitignored `deployments.local.json`
 
 A future version could use a production oracle and swap into a different asset. Neither is part of the deployed evidence above.
 
+## Failure modes (出问题怎么办)
+
+- **余额用完自动停：** `SentinelReactive` 在 Lasna 上以预付 gas 运行；当其余额不足以支付回调 gas 时，`react()` 无法再发出 `requestCallback`，链路自动停止，**不会消耗目标链资金**。充值恢复：向 `SentinelReactive` 地址转入 Lasna 测试币即可（可通过 `npm run faucet` 间接获取），无需重新部署。
+- **目标链交易失败：** 回调在 `SentinelVault.execute()` 内执行；若 revert（价格回到带内、金库未 armed、或调用方不是回调代理），目标链交易回滚、金库资金不动。此时 Reactive 侧 `triggered` 已置位，会阻止重复触发；需 owner 在 Lasna 调 `updateThresholds` 重新武装后才能开启下一轮。
+- **冒充回调被拒：** `execute()` 带 `onlyServiceProvider` + `onlyCallbackSender`，非授权地址调用直接 revert（只读复现见下「验证」，单测见 `test/Vault.test.js`）。
+- **重复事件只执行一次：** Reactive 侧 `triggered` 标志确保同一越线只请求一次回调（`test/Reactive.test.js`："fires only once until thresholds are updated"）；vault 侧 `armed` → `false` 确保同一金库只平仓一次（`test/Vault.test.js`："does nothing when not armed"）。
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
