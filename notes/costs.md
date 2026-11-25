@@ -4,7 +4,7 @@
 > RPC：`https://lasna-rpc.rnk.dev/`
 > 参考：官方文档 [Economy & System Interactions](https://dev.reactive.network/economy)
 >
-> 注：本机未安装 `cast`（WDAC/应用控制策略拦截 Foundry 安装），以下三个参数用 ethers `staticCall` 对同一合约同一读取函数做只读调用得到，与 `cast call` 输出等价。`cast` 命令形式一并给出。
+> 环境：Foundry nightly（`forge`/`cast` 1.10.1），装在 `~/.local/bin`（已在 PATH）。以下为 `cast` 实测输出（stderr 的 nightly 警告已省略）。
 
 ## 一、三条 cast 命令及输出
 
@@ -14,12 +14,12 @@ cast call 0x8888888888888888888888888888888888888888 "_extraGas()"             -
 cast call 0x8888888888888888888888888888888888888888 "_maxChargeGas()"         --rpc-url https://lasna-rpc.rnk.dev/ | cast to-dec
 ```
 
-输出（2026-11-25 实测，ethers 只读复现）：
+输出（2026-11-25 实测，`cast` → `cast to-dec`）：
 
 ```
-_gasPriceCoeffPer1000 = 1000
-_extraGas             = 100000
-_maxChargeGas         = 50000
+cast call ... "_gasPriceCoeffPer1000()"  →  0x...03e8  →  1000
+cast call ... "_extraGas()"              →  0x...186a0 →  100000
+cast call ... "_maxChargeGas()"          →  0x...c350  →  50000
 ```
 
 附赠：本项目 reactive 合约（`0x31297a441F9EC94B34236344ea5F1cE6EC001614`）的账务实测（证明执行后已结清、处于 active）：
